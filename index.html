@@ -162,51 +162,51 @@
     </iframe>
 
     <script>
-        const REFRESH_INTERVAL = 60s; // seconds — change this as needed
-        let countdown = REFRESH_INTERVAL;
-        let timerDisplay = document.getElementById('timer');
-        let lastRefreshDisplay = document.getElementById('last-refresh-time');
-        let flash = document.getElementById('flash');
-        let iframe = document.getElementById('dashboard');
+    const REFRESH_INTERVAL = 60;
+    let countdown = REFRESH_INTERVAL;
 
-        // Update last refreshed time
-        function updateLastRefresh() {
-            const now = new Date();
-            lastRefreshDisplay.textContent = now.toLocaleTimeString();
-        }
+    const timerDisplay = document.getElementById('timer');
+    const lastRefreshDisplay = document.getElementById('last-refresh-time');
+    const flash = document.getElementById('flash');
+    const iframe = document.getElementById('dashboard');
 
-        // Flash effect on refresh
-        function triggerFlash() {
-            flash.classList.add('active');
-            setTimeout(() => flash.classList.remove('active'), 500);
-        }
+    function updateLastRefresh() {
+        const now = new Date();
+        lastRefreshDisplay.textContent = now.toLocaleTimeString();
+    }
 
-        // Refresh the iframe
-        function refreshDashboard() {
-            triggerFlash();
-            iframe.src = iframe.src;
+    function triggerFlash() {
+        flash.classList.add('active');
+        setTimeout(() => flash.classList.remove('active'), 500);
+    }
+
+    function refreshDashboard() {
+        triggerFlash();
+        const currentSrc = iframe.getAttribute('src');
+        iframe.setAttribute('src', '');
+        setTimeout(() => {
+            iframe.setAttribute('src', currentSrc);
             updateLastRefresh();
-            countdown = REFRESH_INTERVAL;
-            console.log('Dashboard refreshed at: ' + new Date().toLocaleTimeString());
-        }
+        }, 500);
+        countdown = REFRESH_INTERVAL;
+    }
 
-        // Manual refresh button
-        function manualRefresh() {
+    function manualRefresh() {
+        countdown = REFRESH_INTERVAL;
+        refreshDashboard();
+    }
+
+    // Countdown runs every second
+    const countdownTimer = setInterval(function () {
+        countdown--;
+        timerDisplay.textContent = countdown;
+        if (countdown <= 0) {
             refreshDashboard();
         }
+    }, 1000);
 
-        // Countdown timer
-        setInterval(function () {
-            countdown--;
-            timerDisplay.textContent = countdown;
-            if (countdown <= 0) {
-                refreshDashboard();
-            }
-        }, 1000);
-
-        // Set initial last refresh time
-        updateLastRefresh();
-    </script>
-
+    // Set initial last refresh time
+    updateLastRefresh();
+</script>
 </body>
 </html>
