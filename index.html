@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌍 Real-Time Earthquake Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #1a1a2e;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        /* Top status bar */
+        .status-bar {
+            background-color: #16213e;
+            color: #00d4ff;
+            padding: 8px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 40px;
+            border-bottom: 1px solid #00d4ff33;
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+
+        .status-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 12px;
+        }
+
+        /* Pulse dot indicator */
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #00ff88;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%   { transform: scale(1);   opacity: 1; }
+            50%  { transform: scale(1.4); opacity: 0.6; }
+            100% { transform: scale(1);   opacity: 1; }
+        }
+
+        .live-label {
+            color: #00ff88;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        /* Countdown timer */
+        .countdown {
+            color: #ffffff;
+            font-size: 12px;
+        }
+
+        .countdown span {
+            color: #00d4ff;
+            font-weight: bold;
+        }
+
+        /* Last refreshed */
+        .last-refresh {
+            color: #aaaaaa;
+            font-size: 11px;
+        }
+
+        /* Refresh button */
+        .refresh-btn {
+            background: #00d4ff22;
+            border: 1px solid #00d4ff;
+            color: #00d4ff;
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: #00d4ff44;
+        }
+
+        /* iframe */
+        iframe {
+            width: 100%;
+            height: calc(100vh - 40px);
+            border: none;
+            display: block;
+        }
+
+        /* Refresh flash overlay */
+        .refresh-flash {
+            position: fixed;
+            top: 40px;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 40px);
+            background: #00d4ff11;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 999;
+        }
+
+        .refresh-flash.active {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="status-left">
+            <span class="pulse-dot"></span>
+            <span class="live-label">LIVE</span>
+            <span class="title">🌍 Real-Time Earthquake Monitor</span>
+        </div>
+        <div class="status-right">
+            <span class="countdown">Refreshing in <span id="timer">60s</span>s</span>
+            <span class="last-refresh">Last refreshed: <span id="last-refresh-time">--:--:--</span></span>
+            <button class="refresh-btn" onclick="manualRefresh()">⟳ Refresh Now</button>
+        </div>
+    </div>
+
+    <!-- Flash overlay -->
+    <div class="refresh-flash" id="flash"></div>
+
+    <!-- Looker Studio Embedded Dashboard -->
+    <iframe
+        id="dashboard"
+        src="https://lookerstudio.google.com/embed/reporting/9aae5b49-36e9-4e06-8be9-fed15107fccc/page/WJvrF"
+        allowfullscreen
+        sandbox="allow-storage-access-by-user-activation
+                 allow-scripts
+                 allow-same-origin
+                 allow-popups
+                 allow-popups-to-escape-sandbox">
+    </iframe>
+
+    <script>
+        const REFRESH_INTERVAL = 60s; // seconds — change this as needed
+        let countdown = REFRESH_INTERVAL;
+        let timerDisplay = document.getElementById('timer');
+        let lastRefreshDisplay = document.getElementById('last-refresh-time');
+        let flash = document.getElementById('flash');
+        let iframe = document.getElementById('dashboard');
+
+        // Update last refreshed time
+        function updateLastRefresh() {
+            const now = new Date();
+            lastRefreshDisplay.textContent = now.toLocaleTimeString();
+        }
+
+        // Flash effect on refresh
+        function triggerFlash() {
+            flash.classList.add('active');
+            setTimeout(() => flash.classList.remove('active'), 500);
+        }
+
+        // Refresh the iframe
+        function refreshDashboard() {
+            triggerFlash();
+            iframe.src = iframe.src;
+            updateLastRefresh();
+            countdown = REFRESH_INTERVAL;
+            console.log('Dashboard refreshed at: ' + new Date().toLocaleTimeString());
+        }
+
+        // Manual refresh button
+        function manualRefresh() {
+            refreshDashboard();
+        }
+
+        // Countdown timer
+        setInterval(function () {
+            countdown--;
+            timerDisplay.textContent = countdown;
+            if (countdown <= 0) {
+                refreshDashboard();
+            }
+        }, 1000);
+
+        // Set initial last refresh time
+        updateLastRefresh();
+    </script>
+
+</body>
+</html>
