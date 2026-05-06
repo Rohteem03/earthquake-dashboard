@@ -85,11 +85,13 @@
 </div>
 
 <div class="iframe-container">
-    <iframe id="dashboard"
+    <iframe 
+    loading = "lazy"
+       id="dashboard"
         src="https://lookerstudio.google.com/embed/reporting/9aae5b49-36e9-4e06-8be9-fed15107fccc/page/WJvrF"
         allowfullscreen
-        sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox">
-    </iframe>
+        sandbox="allow-scripts allow-same-origin allow-popups">
+            </iframe>
 </div>
 
 <script>
@@ -100,6 +102,13 @@
     var iframeEl = document.getElementById('dashboard');
     var refreshBtn = document.getElementById('refreshBtn');
     var iframeSrc = iframeEl.src;
+    iframeEl.onload = function() {
+    console.log("Dashboard loaded successfully");
+};
+
+iframeEl.onerror = function() {
+    console.log("Dashboard failed to load");
+};
 
     function getTime() {
         var now = new Date();
@@ -110,13 +119,13 @@
     }
 
     function refreshDashboard() {
-        iframeEl.src = '';
-        setTimeout(function() {
-            iframeEl.src = iframeSrc;
-        }, 300);
-        lastRefreshEl.textContent = getTime();
-        countdown = REFRESH_INTERVAL;
-        timerEl.textContent = countdown;
+    const newSrc = iframeSrc.split('?')[0] + '?refresh=' + new Date().getTime();
+    iframeEl.src = newSrc;
+
+    lastRefreshEl.textContent = getTime();
+    countdown = REFRESH_INTERVAL;
+    timerEl.textContent = countdown;
+
     }
 
     refreshBtn.addEventListener('click', function() {
