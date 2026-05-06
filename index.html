@@ -111,51 +111,86 @@
 <script>
     var REFRESH_INTERVAL = 60;
     var countdown = REFRESH_INTERVAL;
+
     var timerEl = document.getElementById('timer');
     var lastRefreshEl = document.getElementById('lastRefresh');
-    var iframeEl = document.getElementById('dashboard');
     var refreshBtn = document.getElementById('refreshBtn');
-    var iframeSrc = iframeEl.src;
-    iframeEl.onload = function() {
-    console.log("Dashboard loaded successfully");
-};
 
-iframeEl.onerror = function() {
-    console.log("Dashboard failed to load");
-};
+    // Dual iframe setup
+    var iframe1 = document.getElementById('iframe1');
+    var iframe2 = document.getElementById('iframe2');
+
+    var activeFrame = iframe1;
+    var standbyFrame = iframe2;
 
     function getTime() {
         var now = new Date();
+
         var h = now.getHours().toString().padStart(2, '0');
         var m = now.getMinutes().toString().padStart(2, '0');
         var s = now.getSeconds().toString().padStart(2, '0');
+
         return h + ':' + m + ':' + s;
     }
 
     function refreshDashboard() {
-    const newSrc = iframeSrc.split('?')[0] + '?refresh=' + new Date().getTime();
-    iframeEl.src = newSrc;
 
-    lastRefreshEl.textContent = getTime();
-    countdown = REFRESH_INTERVAL;
-    timerEl.textContent = countdown;
+        console.log("Refreshing dashboard...");
 
+        // Generate fresh URL
+        var baseSrc = activeFrame.src.split('?')[0];
+
+        var newSrc = baseSrc + '?refresh=' + new Date().getTime();
+
+        // Load in hidden frame
+        standbyFrame.src = newSrc;
+
+        standbyFrame.onload = function () {
+
+            console.log("Dashboard loaded successfully");
+
+            // Make standby visible
+            standbyFrame.classList.remove('hidden-frame');
+            standbyFrame.classList.add('active-frame');
+
+            // Hide current active frame
+            activeFrame.classList.remove('active-frame');
+            activeFrame.classList.add('hidden-frame');
+
+            // Swap references
+            var temp = activeFrame;
+            activeFrame = standbyFrame;
+            standbyFrame = temp;
+
+            // Update timer
+            lastRefreshEl.textContent = getTime();
+
+            countdown = REFRESH_INTERVAL;
+            timerEl.textContent = countdown;
+
+            console.log("Seamless swap complete");
+        };
     }
 
-    refreshBtn.addEventListener('click', function() {
+    // Manual refresh button
+    refreshBtn.addEventListener('click', function () {
         refreshDashboard();
     });
 
-    // Set initial time
+    // Initial timestamp
     lastRefreshEl.textContent = getTime();
 
-    // Countdown every second
-    setInterval(function() {
-        countdown = countdown - 1;
+    // Countdown timer
+    setInterval(function () {
+
+        countdown--;
+
         timerEl.textContent = countdown;
+
         if (countdown <= 0) {
             refreshDashboard();
         }
+
     }, 1000);
 </script>
 
