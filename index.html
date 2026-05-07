@@ -107,7 +107,6 @@
 
     <iframe id="iframe2" class="hidden-frame"></iframe>
 </div>
-
 <script>
     var REFRESH_INTERVAL = 60;
     var countdown = REFRESH_INTERVAL;
@@ -156,37 +155,37 @@
 
         // Load new dashboard in hidden frame
         standbyFrame.src = newSrc;
-        
-standbyFrame.onload = function () {
 
-    console.log("Dashboard loaded successfully");
+        standbyFrame.onload = function () {
 
-    // Show new frame
-    standbyFrame.classList.remove('hidden-frame');
-    standbyFrame.classList.add('active-frame');
+            console.log("Dashboard loaded successfully");
 
-    // Hide old frame
-    activeFrame.classList.remove('active-frame');
-    activeFrame.classList.add('hidden-frame');
+            // Show new frame
+            standbyFrame.classList.remove('hidden-frame');
+            standbyFrame.classList.add('active-frame');
 
-    // Swap references
-    var temp = activeFrame;
-    activeFrame = standbyFrame;
-    standbyFrame = temp;
+            // Hide old frame
+            activeFrame.classList.remove('active-frame');
+            activeFrame.classList.add('hidden-frame');
 
-    // Update refresh timestamp
-    lastRefreshEl.textContent = getTime();
+            // Swap references
+            var temp = activeFrame;
+            activeFrame = standbyFrame;
+            standbyFrame = temp;
 
-    // Reset countdown
-    countdown = REFRESH_INTERVAL;
-    timerEl.textContent = countdown;
+            // Update refresh timestamp
+            lastRefreshEl.textContent = getTime();
 
-    // Unlock refresh
-    isRefreshing = false;
+            // Reset countdown
+            countdown = REFRESH_INTERVAL;
+            timerEl.textContent = countdown;
 
-    console.log("Seamless swap complete");
-};
-            
+            // Unlock refresh
+            isRefreshing = false;
+
+            console.log("Seamless swap complete");
+        };
+    }
 
     // Manual refresh button
     refreshBtn.addEventListener('click', function () {
@@ -214,6 +213,7 @@ standbyFrame.onload = function () {
     }, 1000);
 
 </script>
+    
     
 </body>
 </html>
