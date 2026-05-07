@@ -156,37 +156,40 @@
 
         // Load new dashboard in hidden frame
         standbyFrame.src = newSrc;
+standbyFrame.onload = function () {
 
-        standbyFrame.onload = function () {
+    console.log("Dashboard loaded successfully");
 
-            console.log("Dashboard loaded successfully");
+    // Give Looker Studio time to render visually
+    setTimeout(function () {
 
-            // Show new frame
-            standbyFrame.classList.remove('hidden-frame');
-            standbyFrame.classList.add('active-frame');
+        // Fade in new frame
+        standbyFrame.classList.remove('hidden-frame');
+        standbyFrame.classList.add('active-frame');
 
-            // Hide old frame
-            activeFrame.classList.remove('active-frame');
-            activeFrame.classList.add('hidden-frame');
+        // Fade out old frame
+        activeFrame.classList.remove('active-frame');
+        activeFrame.classList.add('hidden-frame');
 
-            // Swap references
-            var temp = activeFrame;
-            activeFrame = standbyFrame;
-            standbyFrame = temp;
+        // Swap references
+        var temp = activeFrame;
+        activeFrame = standbyFrame;
+        standbyFrame = temp;
 
-            // Update refresh timestamp
-            lastRefreshEl.textContent = getTime();
+        // Update refresh info
+        lastRefreshEl.textContent = getTime();
 
-            // Reset countdown
-            countdown = REFRESH_INTERVAL;
-            timerEl.textContent = countdown;
+        countdown = REFRESH_INTERVAL;
+        timerEl.textContent = countdown;
 
-            // Unlock refresh
-            isRefreshing = false;
+        // Unlock refresh cycle
+        isRefreshing = false;
 
-            console.log("Seamless swap complete");
-        };
-    }
+        console.log("Seamless swap complete");
+
+    }, 1200); // <-- important delay
+};
+            
 
     // Manual refresh button
     refreshBtn.addEventListener('click', function () {
