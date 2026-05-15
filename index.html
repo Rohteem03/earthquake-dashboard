@@ -107,86 +107,51 @@
     </div>
 <script>
     var REFRESH_INTERVAL = 60;
-   
-    // Prevent overlapping refreshes
-    var isRefreshing = false;
+var isRefreshing = false;
 
-    // UI Elements
-   
-    var lastRefreshEl = document.getElementById('lastRefresh');
-    var refreshBtn = document.getElementById('refreshBtn');
+var lastRefreshEl = document.getElementById('lastRefresh');
+var refreshBtn = document.getElementById('refreshBtn');
 
-    // Dual iframe setup
-    var iframe1 = document.getElementById('iframe1');
-    var iframe2 = document.getElementById('iframe2');
+var frame = document.getElementById('iframe1');
 
-    // Active/standby references
-    var activeFrame = iframe1;
-    var standbyFrame = iframe2;
+function getTime() {
+    var now = new Date();
+    return now.getHours().toString().padStart(2,'0') + ":" +
+           now.getMinutes().toString().padStart(2,'0') + ":" +
+           now.getSeconds().toString().padStart(2,'0');
+}
 
-    // Format current time
-    function getTime() {
-        var now = new Date();
-
-        var h = now.getHours().toString().padStart(2, '0');
-        var m = now.getMinutes().toString().padStart(2, '0');
-        var s = now.getSeconds().toString().padStart(2, '0');
-
-        return h + ':' + m + ':' + s;
-    }
-
-    // Dashboard refresh logic
-  function refreshDashboard() {
+function refreshDashboard() {
     if (isRefreshing) return;
     isRefreshing = true;
 
-    const frame = document.getElementById("dashboardFrame");
-
-    const baseUrl =
+    var baseUrl =
         "https://datastudio.google.com/embed/reporting/9aae5b49-36e9-4e06-8be9-fed15107fccc/page/WJvrF";
 
-    const newUrl = baseUrl + "?t=" + Date.now();
+    var newUrl = baseUrl + "&t=" + Date.now();
 
-    // Create a hidden "preload swap"
-    const tempFrame = document.createElement("iframe");
-    tempFrame.style.position = "absolute";
-    tempFrame.style.width = "100%";
-    tempFrame.style.height = "100%";
-    tempFrame.style.border = "none";
-    tempFrame.style.opacity = "0";
-    tempFrame.src = newUrl;
+    frame.style.opacity = "0.4";
 
-    document.querySelector(".iframe-container").appendChild(tempFrame);
-
-    tempFrame.onload = function () {
-        // instantly swap visibility (no blank screen)
-        frame.src = newUrl;
-
-        // remove temp loader
-        tempFrame.remove();
-
+    frame.onload = function () {
+        frame.style.opacity = "1";
         lastRefreshEl.textContent = getTime();
         isRefreshing = false;
+        frame.onload = null;
     };
+
+    // THIS WAS MISSING (critical fix)
+    frame.src = newUrl;
 }
 
-    // Manual refresh button
-    refreshBtn.addEventListener('click', function () {
-        refreshDashboard();
-    });
+// button click (bind ONCE, outside function)
+refreshBtn.addEventListener('click', refreshDashboard);
 
-    // Initial timestamp
-    lastRefreshEl.textContent = getTime();
+// initial timestamp
+lastRefreshEl.textContent = getTime();
 
-    // Countdown timer
-    setInterval(function () {if (isRefreshing) return;
-
-    refreshDashboard();
-
-}, REFRESH_INTERVAL * 1000);
-
+// auto refresh (runs independently)
+setInterval(refreshDashboard, REFRESH_INTERVAL * 1000);
 </script>
-    
-    
+  
 </body>
 </html>
