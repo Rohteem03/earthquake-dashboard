@@ -101,7 +101,7 @@
 
 <div class="iframe-container">
     <iframe id="iframe1" class="active-frame"
-        src="https://lookerstudio.google.com/embed/reporting/9aae5b49-36e9-4e06-8be9-fed15107fccc/page/WJvrF">
+        src="https://datastudio.google.com/embed/reporting/9aae5b49-36e9-4e06-8be9-fed15107fccc/page/WJvrF">
     </iframe>
 
     <iframe id="iframe2" class="hidden-frame"></iframe>
@@ -147,8 +147,8 @@
         console.log("Refreshing dashboard...");
 
         // Create fresh URL with cache-busting
-        var baseSrc = activeFrame.src.split('?')[0];
-
+        var baseSrc = "https://datastudio.google.com/embed/reporting/9aae5b49-36e9-4e06-8be9-fed15107fccc/page/WJvrF";
+        
         var newSrc = baseSrc + '?refresh=' + new Date().getTime();
 
         // Load new dashboard in hidden frame
