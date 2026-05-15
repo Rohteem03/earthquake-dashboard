@@ -104,8 +104,7 @@
         src="https://datastudio.google.com/embed/reporting/9aae5b49-36e9-4e06-8be9-fed15107fccc/page/WJvrF">
     </iframe>
 
-    <iframe id="iframe2" class="hidden-frame"></iframe>
-</div>
+    </div>
 <script>
     var REFRESH_INTERVAL = 60;
    
@@ -137,49 +136,39 @@
     }
 
     // Dashboard refresh logic
-    function refreshDashboard() {
+  function refreshDashboard() {
+    if (isRefreshing) return;
+    isRefreshing = true;
 
-        // Prevent duplicate refreshes
-        if (isRefreshing) return;
+    const frame = document.getElementById("dashboardFrame");
 
-        isRefreshing = true;
+    const baseUrl =
+        "https://datastudio.google.com/embed/reporting/9aae5b49-36e9-4e06-8be9-fed15107fccc/page/WJvrF";
 
-        console.log("Refreshing dashboard...");
+    const newUrl = baseUrl + "?t=" + Date.now();
 
-        // Create fresh URL with cache-busting
-        var baseSrc = "https://datastudio.google.com/embed/reporting/9aae5b49-36e9-4e06-8be9-fed15107fccc/page/WJvrF";
-        
-        var newSrc = baseSrc + '?refresh=' + new Date().getTime();
+    // Create a hidden "preload swap"
+    const tempFrame = document.createElement("iframe");
+    tempFrame.style.position = "absolute";
+    tempFrame.style.width = "100%";
+    tempFrame.style.height = "100%";
+    tempFrame.style.border = "none";
+    tempFrame.style.opacity = "0";
+    tempFrame.src = newUrl;
 
-        // Load new dashboard in hidden frame
-        standbyFrame.src = newSrc;
+    document.querySelector(".iframe-container").appendChild(tempFrame);
 
-        standbyFrame.onload = function () {
+    tempFrame.onload = function () {
+        // instantly swap visibility (no blank screen)
+        frame.src = newUrl;
 
-            console.log("Dashboard loaded successfully");
+        // remove temp loader
+        tempFrame.remove();
 
-            // Show new frame
-            standbyFrame.classList.remove('hidden-frame');
-            standbyFrame.classList.add('active-frame');
-
-            // Hide old frame
-            activeFrame.classList.remove('active-frame');
-            activeFrame.classList.add('hidden-frame');
-
-            // Swap references
-            var temp = activeFrame;
-            activeFrame = standbyFrame;
-            standbyFrame = temp;
-
-            // Update refresh timestamp
-            lastRefreshEl.textContent = getTime();
-
-            // Unlock refresh
-            isRefreshing = false;
-
-            console.log("Seamless swap complete");
-        };
-    }
+        lastRefreshEl.textContent = getTime();
+        isRefreshing = false;
+    };
+}
 
     // Manual refresh button
     refreshBtn.addEventListener('click', function () {
