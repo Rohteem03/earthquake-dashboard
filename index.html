@@ -94,7 +94,6 @@
         <span class="title">🌍 Real-Time Earthquake Monitor</span>
     </div>
     <div class="status-right">
-        <span class="countdown">Next refresh in <span class="countdown-num" id="timer">60</span>s</span>
         <span class="last-refresh">Last refreshed: <span class="last-refresh-time" id="lastRefresh">loading...</span></span>
         <button class="refresh-btn" id="refreshBtn">⟳ Refresh Now</button>
     </div>
@@ -109,13 +108,12 @@
 </div>
 <script>
     var REFRESH_INTERVAL = 60;
-    var countdown = REFRESH_INTERVAL;
-
+   
     // Prevent overlapping refreshes
     var isRefreshing = false;
 
     // UI Elements
-    var timerEl = document.getElementById('timer');
+   
     var lastRefreshEl = document.getElementById('lastRefresh');
     var refreshBtn = document.getElementById('refreshBtn');
 
@@ -176,10 +174,6 @@
             // Update refresh timestamp
             lastRefreshEl.textContent = getTime();
 
-            // Reset countdown
-            countdown = REFRESH_INTERVAL;
-            timerEl.textContent = countdown;
-
             // Unlock refresh
             isRefreshing = false;
 
@@ -196,21 +190,11 @@
     lastRefreshEl.textContent = getTime();
 
     // Countdown timer
-    setInterval(function () {
+    setInterval(function () {if (isRefreshing) return;
 
-        // Pause timer during refresh
-        if (isRefreshing) return;
+    refreshDashboard();
 
-        countdown--;
-
-        timerEl.textContent = countdown;
-
-        // Trigger refresh at zero
-        if (countdown <= 0) {
-            refreshDashboard();
-        }
-
-    }, 1000);
+}, REFRESH_INTERVAL * 1000);
 
 </script>
     
